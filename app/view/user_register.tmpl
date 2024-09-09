@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>User Login/Register</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<body>
+<main class="main">
+    <h1>User Register</h1>
+    <input type="text" name="registerName" id="registerName" placeholder="Username">
+    <input type="password" name="registerPassword" id="registerPassword" placeholder="Password">
+    <input type="password" name="registerPassword2" id="registerPassword2" placeholder="Confirm Password">
+    <button type="button" id="registerBtn">Register<tton>
+</main>
+<script>
+    $(document).ready(function() {
+        $("#registerBtn").on("click", function() {
+            var registerData = {
+                name: $("#registerName").val(),
+                password: $("#registerPassword").val(),
+                password2: $("#registerPassword2").val()
+            };
+
+            var formData = new FormData();
+            formData.append('name', registerData.name);
+            formData.append('password', registerData.password);
+            formData.append('password2', registerData.password2);
+            $.ajax({
+                url: "/user/create_user",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    alert(response.message);
+                    window.location.href = "/user/login"; // Redirect to login page
+                },
+            });
+        });
+    });
+</script>
+</body>
+<ml>

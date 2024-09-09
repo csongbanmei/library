@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>支付宝退款</title>
+</head>
+<body>
+<h1>支付宝退款</h1>
+<form id="refundForm">
+    <label for="id">用户ID：</label>
+    <input type="text" id="id" name="id" required><br>
+
+    <label for="uid">图书ID：</label>
+    <input type="text" id="uid" name="uid" required><br>
+
+    <label for="num">退款数量：</label>
+    <input type="text" id="num" name="num" required><br>
+
+    <button type="submit">发起退款</button>
+</form>
+
+<script>
+    document.getElementById("refundForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        var form = new FormData(document.getElementById("refundForm"));
+
+        fetch("http://127.0.0.1:8080/user/returnpay", { // 更新为后端路径
+            method: "POST",
+            body: form
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert("退款请求成功：" + data.message);
+            })
+            .catch(error => {
+                console.error("退款请求失败：", error);
+            });
+    });
+</script>
+</body>
+</html>

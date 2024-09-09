@@ -1,0 +1,65 @@
+<!-- email_verification.tmpl -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#sendCodeBtn").on("click", function(event) {
+            event.preventDefault();
+            var email = $("#emailInput").val();
+
+            $.ajax({
+                type: "POST",
+                url: "/user/create_email",
+                data: { email: email },
+                success: function(response) {
+                    // 处理发送验证码成功的响应
+                    alert(response.message);
+                },
+                error: function(xhr, status, error) {
+                    // 处理发送验证码失败的响应
+                    var errorMessage = JSON.parse(xhr.responseText).message;
+                    alert(errorMessage);
+                }
+            });
+        });
+
+        $("#verifyForm").on("submit", function(event) {
+            event.preventDefault();
+            var formData = $(this).serialize();
+
+            $.ajax({
+                type: "POST",
+                url: "/user/verify_email",
+                data: formData,
+                success: function(response) {
+                    // 处理验证成功的响应
+                    alert(response.message);
+                    window.location.href="/user/login";//实现跳转
+
+                },
+                error: function(xhr, status, error) {
+                    // 处理验证失败的响应
+                    var errorMessage = JSON.parse(xhr.responseText).message;
+                    alert(errorMessage);
+                }
+            });
+        });
+    });
+</script>
+
+<input id="emailInput" type="text" name="email" placeholder="Email" required><br>
+<button id="sendCodeBtn">发送验证码</button>
+
+<form id="verifyForm" method="POST" action="/verify_email">
+    <input type="text" name="captcha" placeholder="验证码" required><br>
+    <input type="hidden" name="email" value="" id="verifyEmailInput"> <!-- 添加隐藏字段用于传递邮箱到验证表单 -->
+    <button type="submit">验证</button>
+</form>
+
+<script>
+    // 更新验证表单中的隐藏字段值为当前输入的邮箱
+    $("#sendCodeBtn").on("click", function(event) {
+        event.preventDefault();
+        var email = $("#emailInput").val();
+        $("#verifyEmailInput").val(email);
+    });
+</script>

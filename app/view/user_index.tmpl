@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>用户借还书管理</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h1>借还书管理</h1>
+
+<h2>借书</h2>
+<form id="borrow-form">
+    <label for="borrow-user-id">用户ID:</label>
+    <input type="text" id="borrow-user-id" name="user_id" required><br>
+
+    <label for="borrow-book-id">图书ID:</label>
+    <input type="text" id="borrow-book-id" name="book_id" required><br>
+
+    <input type="submit" value="借书">
+</form>
+
+<h2>还书</h2>
+<form id="return-form">
+    <label for="user-id">用户ID:</label>
+    <input type="text" id="user-id" name="user_id" required><br>
+
+    <label for="book-id">图书ID:</label>
+    <input type="text" id="book-id" name="book_id" required><br>
+
+    <input type="submit" value="还书">
+</form>
+
+<script>
+    // 借书表单提交事件处理
+    $('#borrow-form').submit(function (event) {
+        event.preventDefault();  // 阻止表单默认提交行为
+
+        var formData = $(this).serialize();  // 序列化表单数据
+
+        // 发起 Ajax 请求
+        $.ajax({
+            url: '/user/book/borrow',
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                alert('借书成功');
+            },
+            error: function (xhr, status, error) {
+                alert('借书失败：' + xhr.responseText);
+            }
+        });
+    });
+
+    // 还书表单提交事件处理
+    $('#return-form').submit(function (event) {
+        event.preventDefault();  // 阻止表单默认提交行为
+
+        var formData = $(this).serialize();  // 序列化表单数据
+
+        // 发起 Ajax 请求
+        $.ajax({
+            url: '/user/book/return',
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                alert('还书成功');
+            },
+            error: function (xhr, status, error) {
+                alert('还书失败：' + xhr.responseText);
+            }
+        });
+    });
+</script>
+</body>
+</html>

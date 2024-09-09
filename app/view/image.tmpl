@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>图片上传</title>
+</head>
+<body>
+<h1>图片上传</h1>
+<input type="file" id="uploadInput" accept="image/*">
+<button onclick="uploadImage()">上传</button>
+
+<script>
+    function uploadImage() {
+        var fileInput = document.getElementById('uploadInput');
+        var file = fileInput.files[0];
+
+        var formData = new FormData();
+        formData.append('image', file);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/upload', true);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                alert('图片上传成功！');
+            } else {
+                alert('图片上传失败！');
+            }
+        };
+        xhr.send(formData);
+    }
+</script>
+</body>
+</html>

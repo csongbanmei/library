@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>图书管理系统</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h1>图书管理系统</h1>
+
+<h2>添加图书</h2>
+<form id="addBookForm">
+    <label for="name">图书名称:</label>
+    <input type="text" id="name" name="name" required><br><br>
+    <label for="cate">分类:</label>
+    <input type="text" id="cate" name="cate" required><br><br>
+    <label for="num">数量:</label>
+    <input type="number" id="num" name="num" required><br><br>
+    <button type="submit">添加</button>
+</form>
+
+<h2>图书列表</h2>
+<table id="bookTable">
+    <tr>
+        <th>ID</th>
+        <th>图书名称</th>
+        <th>作者</th>
+        <th>出版社</th>
+        <th>图书图片</th>
+        <th>操作</th>
+    </tr>
+</table>
+
+<script>
+    // 获取图书列表
+    function getBooks() {
+        $.ajax({
+            url: "/book/listinfo",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                if (response.code === 0) {
+                    var books = response.data;
+                    var table = $("#bookTable");
+                    table.find("tr:gt(0)").remove(); // 清空表格除了表头
+                    $.each(books, function(index, book) {
+                        var img = $('<img src="/static/' + book.img_url + '" alt="没有找到图片">').addClass('img-class').css({'width': '69px', 'height': '105px'});
+                        var row = $("<tr><td>" + book.id + "</td><td>" + book.book_name + "</td><td>" + book.author + "</td><td>" + book.publishing_house + "</td><td></td><td><button class='deleteBtn' data-id='" + book.id + "'>删除</button></td></tr>");
+
+                        row.find("td").eq(4).append(img); // 在第5列添加图片
+                        table.append(row); // 将行添加到表格中
+                    });
+                } else {
+                    alert("获取图书列表失败：" + response.message);
+                }
+            },
+            error: function () {
+                alert("获取图书列表失败");
+            }
+        });
+    }
+
+    // 添加图书
+    $("#addBookForm").submit(function (event) {
+        event.preventDefault();
+        var form = $(this);
+        var formData = form.serialize();
+        $.ajax({
+            url: "/book",
+            type: "POST",
+            data: formData,
+            dataType: "json",
+            success: function (response) {
+                if (response.code === 0) {
+                    form[0].reset(); // 清空表单
+                    getBooks(); // 刷新图书列表
+                } else {
+                    alert("添加图书失败：" + response.message);
+                }
+            },
+            error: function () {
+                alert("添加图书失败");
+            }
+        });
+    });
+
+    // 删除图书
+    $("#bookTable").on("click", ".deleteBtn", function () {
+        var bookId = $(this).data("id");
+        if (confirm("确定要删除该图书吗？")) {
+            $.ajax({
+                url: "/book",
+                type: "DELETE",
+                data: { id: bookId },
+                dataType: "json",
+                success: function (response) {
+                    if (response.code === 1002) {
+                        getBooks(); // 刷新图书列表
+                    } else {
+                        alert("删除图书失败：" + response.message);
+                    }
+                },
+                error: function () {
+                    alert("删除图书失败");
+                }
+            });
+        }
+    });
+
+    // 页面加载完成后获取图书列表
+    $(document).ready(function () {
+        getBooks();
+    });
+</script>
+</body>
+</html>
